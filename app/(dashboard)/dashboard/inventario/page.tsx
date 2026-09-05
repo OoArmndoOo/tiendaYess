@@ -13,13 +13,15 @@ import {
   Filter, 
   AlertCircle,
   RefreshCw,
-  Plus
+  Plus,
+  Image
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { registrarMovimiento } from '@/lib/actions/registros'
 import EditarProductoModal from '@/components/modals/EditarProductoModal'
+import DetalleProductoModal from '@/components/modals/DetalleProductoModal'
 
 interface Producto {
   id_producto: number
@@ -45,6 +47,7 @@ export default function InventarioPage() {
   const [filtroEstado, setFiltroEstado] = useState<'todos' | 'activo' | 'inactivo'>('todos')
   const [productoEliminar, setProductoEliminar] = useState<ProductoEliminar | null>(null)
   const [productoEditando, setProductoEditando] = useState<number | null>(null)
+  const [productoDetalle, setProductoDetalle] = useState<number | null>(null)
   const [accionEnProceso, setAccionEnProceso] = useState<number | null>(null)
   const [tipos, setTipos] = useState<{ id_tipo: number; nombre_tipo: string }[]>([])
 
@@ -267,7 +270,7 @@ export default function InventarioPage() {
         </div>
       </div>
 
-      {/* Lista de productos */}
+      {/* ====== LISTA DE PRODUCTOS ====== */}
       {loading ? (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
           <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent"></div>
@@ -278,23 +281,36 @@ export default function InventarioPage() {
           {productosFiltrados.map((producto) => {
             const stockStatus = getStockStatus(producto.cantidad)
             const imagenPrincipal = producto.fotos?.[0]?.foto || null
+            const totalFotos = producto.fotos?.length || 0
 
             return (
               <div 
                 key={producto.id_producto} 
-                className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200"
+                className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-200 flex flex-col cursor-pointer"
+                onClick={() => setProductoDetalle(producto.id_producto)}
               >
-                {/* Imagen */}
-                <div className="relative h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
-                  {imagenPrincipal ? (
-                    <img 
-                      src={imagenPrincipal} 
-                      alt={producto.nombre_producto} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                {/* ====== IMAGEN CON EFECTO BLUR ====== */}
+                <div className="relative h-52 w-full overflow-hidden bg-gray-100 flex-shrink-0">
+                  {/* Fondo difuminado - opacidad 100% */}
+                  {imagenPrincipal && (
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center blur-xl opacity-100"
+                      style={{ backgroundImage: `url(${imagenPrincipal})` }}
                     />
-                  ) : (
-                    <Package className="w-14 h-14 text-gray-300" />
                   )}
+                  
+                  {/* Imagen principal - TAMAÑO COMPLETO sin padding */}
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {imagenPrincipal ? (
+                      <img 
+                        src={imagenPrincipal} 
+                        alt={producto.nombre_producto} 
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <Package className="w-14 h-14 text-gray-300" />
+                    )}
+                  </div>
                   
                   {/* Badge de estado en la imagen */}
                   {!producto.estado && (
@@ -305,31 +321,39 @@ export default function InventarioPage() {
                     </div>
                   )}
                   
-                  {/* Badge de stock bajo */}
+                  {/* Badge de stock bajo en la esquina */}
                   {producto.estado && producto.cantidad <= 5 && producto.cantidad > 0 && (
-                    <div className="absolute top-2 right-2">
-                      <span className="flex items-center gap-1 px-2 py-1 bg-yellow-500/90 text-white text-xs font-semibold rounded-full">
+                    <div className="absolute top-3 right-3">
+                      <span className="flex items-center gap-1 px-2.5 py-1 bg-yellow-500/90 text-white text-xs font-semibold rounded-full shadow-sm">
                         <AlertCircle className="w-3 h-3" />
                         Stock bajo
                       </span>
                     </div>
                   )}
                   {producto.estado && producto.cantidad === 0 && (
-                    <div className="absolute top-2 right-2">
-                      <span className="px-2 py-1 bg-red-500/90 text-white text-xs font-semibold rounded-full">
+                    <div className="absolute top-3 right-3">
+                      <span className="px-2.5 py-1 bg-red-500/90 text-white text-xs font-semibold rounded-full shadow-sm">
                         Agotado
                       </span>
                     </div>
                   )}
+
+                  {/* ====== CONTADOR DE FOTOS ====== */}
+                  {totalFotos > 0 && (
+                    <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-xs rounded-full">
+                      <Image className="w-3 h-3" />
+                      <span>{totalFotos}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Info */}
-                <div className="p-4">
+                {/* ====== INFO DEL PRODUCTO ====== */}
+                <div className="p-4 flex-1 flex flex-col">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-semibold text-gray-800 truncate flex-1" title={producto.nombre_producto}>
                       {producto.nombre_producto}
                     </h3>
-                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
+                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
                       producto.estado 
                         ? 'bg-green-100 text-green-700' 
                         : 'bg-gray-100 text-gray-500'
@@ -351,17 +375,23 @@ export default function InventarioPage() {
                     </span>
                   </div>
 
-                  {/* Acciones */}
+                  {/* ====== ACCIONES ====== */}
                   <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-gray-100">
                     <button
-                      onClick={() => setProductoEditando(producto.id_producto)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setProductoEditando(producto.id_producto)
+                      }}
                       className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                       title="Editar producto"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleToggleEstado(producto.id_producto, producto.estado, producto.nombre_producto)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleToggleEstado(producto.id_producto, producto.estado, producto.nombre_producto)
+                      }}
                       disabled={accionEnProceso === producto.id_producto}
                       className={`p-1.5 rounded-lg transition-colors ${
                         accionEnProceso === producto.id_producto
@@ -381,7 +411,10 @@ export default function InventarioPage() {
                       )}
                     </button>
                     <button
-                      onClick={() => setProductoEliminar({ id: producto.id_producto, nombre: producto.nombre_producto })}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setProductoEliminar({ id: producto.id_producto, nombre: producto.nombre_producto })
+                      }}
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Eliminar producto"
                     >
@@ -420,7 +453,7 @@ export default function InventarioPage() {
         </div>
       )}
 
-      {/* Modal de confirmación para eliminar */}
+      {/* ====== MODAL DE CONFIRMACIÓN PARA ELIMINAR ====== */}
       {productoEliminar && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
@@ -462,13 +495,22 @@ export default function InventarioPage() {
         </div>
       )}
 
-      {/* Modal de edición */}
+      {/* ====== MODAL DE EDICIÓN ====== */}
       {productoEditando && (
         <EditarProductoModal
           productoId={productoEditando}
           isOpen={true}
           onClose={() => setProductoEditando(null)}
           onSuccess={handleEditarExito}
+        />
+      )}
+
+      {/* ====== MODAL DE DETALLES DEL PRODUCTO ====== */}
+      {productoDetalle && (
+        <DetalleProductoModal
+          productoId={productoDetalle}
+          isOpen={true}
+          onClose={() => setProductoDetalle(null)}
         />
       )}
     </div>

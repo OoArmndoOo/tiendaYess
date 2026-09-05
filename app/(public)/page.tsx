@@ -15,12 +15,8 @@ export default async function HomePage() {
       precio,
       detalles,
       estado,
-      tipos (
-        nombre_tipo
-      ),
-      fotos (
-        foto
-      )
+      tipos (nombre_tipo),
+      fotos (foto)
     `)
     .eq('estado', true)
     .order('id_producto', { ascending: false })

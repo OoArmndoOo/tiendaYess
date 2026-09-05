@@ -1,9 +1,9 @@
 // components/ui/ProductCard.tsx
 'use client'
 
-import Image from 'next/image'
 import { useState } from 'react'
 import ProductModal from '@/components/modals/ProductModal'
+import { Package, Image as ImageIcon } from 'lucide-react'
 
 interface ProductCardProps {
   producto: {
@@ -24,12 +24,12 @@ interface ProductCardProps {
 export default function ProductCard({ producto }: ProductCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   
-  // Obtener la primera foto o usar placeholder
   const imagenPrincipal = producto.fotos && producto.fotos.length > 0
     ? producto.fotos[0].foto
-    : '/images/placeholder.jpg'
+    : null
 
-  // Formatear precio
+  const totalFotos = producto.fotos?.length || 0
+
   const precioFormateado = new Intl.NumberFormat('es-BO', {
     style: 'currency',
     currency: 'BOB'
@@ -38,33 +38,59 @@ export default function ProductCard({ producto }: ProductCardProps) {
   return (
     <>
       <div 
-        className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+        className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer flex flex-col"
         onClick={() => setIsModalOpen(true)}
       >
-        {/* Imagen */}
-        <div className="relative h-48 w-full bg-gray-200">
-          <Image
-            src={imagenPrincipal}
-            alt={producto.nombre_producto}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          {/* Badge de stock */}
+        {/* ====== IMAGEN CON EFECTO BLUR ====== */}
+        <div className="relative h-56 w-full overflow-hidden bg-gray-100 flex-shrink-0">
+          {/* Fondo difuminado (solo como respaldo) */}
+          {imagenPrincipal && (
+            <div 
+              className="absolute inset-0 bg-cover bg-center blur-xl opacity-100"
+              style={{ backgroundImage: `url(${imagenPrincipal})` }}
+            />
+          )}
+          
+          {/* Imagen principal - TAMAÑO COMPLETO */}
+          <div className="relative w-full h-full flex items-center justify-center">
+            {imagenPrincipal ? (
+              <img 
+                src={imagenPrincipal} 
+                alt={producto.nombre_producto} 
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <Package className="w-16 h-16 text-gray-300" />
+            )}
+          </div>
+          
+          {/* Badge de stock en la imagen */}
           {producto.cantidad <= 0 && (
-            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
-              Agotado
+            <div className="absolute top-3 right-3">
+              <span className="px-2.5 py-1 bg-red-500/90 text-white text-xs font-semibold rounded-full shadow-sm">
+                Agotado
+              </span>
             </div>
           )}
           {producto.cantidad > 0 && producto.cantidad <= 5 && (
-            <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
-              Últimas unidades
+            <div className="absolute top-3 right-3">
+              <span className="flex items-center gap-1 px-2.5 py-1 bg-yellow-500/90 text-white text-xs font-semibold rounded-full shadow-sm">
+                Stock bajo
+              </span>
+            </div>
+          )}
+
+          {/* ====== CONTADOR DE FOTOS ====== */}
+          {totalFotos > 0 && (
+            <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-xs rounded-full">
+              <ImageIcon className="w-3 h-3" />
+              <span>{totalFotos}</span>
             </div>
           )}
         </div>
 
-        {/* Contenido */}
-        <div className="p-4">
+        {/* ====== CONTENIDO ====== */}
+        <div className="p-4 flex-1 flex flex-col">
           <h3 className="font-semibold text-gray-800 text-lg mb-1 line-clamp-1">
             {producto.nombre_producto}
           </h3>
@@ -75,7 +101,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
             </p>
           )}
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             <span className="text-xl font-bold text-primary-600">
               {precioFormateado}
             </span>
@@ -88,7 +114,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
         </div>
       </div>
 
-      {/* Modal de detalles */}
+      {/* ====== MODAL DE DETALLES ====== */}
       {isModalOpen && (
         <ProductModal 
           producto={producto}
