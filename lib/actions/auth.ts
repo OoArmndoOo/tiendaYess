@@ -4,26 +4,22 @@
 import { supabase } from '@/lib/supabaseClient'
 import bcrypt from 'bcrypt'
 import { cookies } from 'next/headers'
-import { UsuarioSinPassword, SessionUser } from '@/types'
+import { UsuarioSinPassword, SessionUser, RegisterFormData } from '@/types'
 
 // ========== REGISTRO ==========
-export async function registrarUsuarioAction(data: {
-  nombre_usuario: string
-  email: string
-  contraseña: string
-}): Promise<UsuarioSinPassword> {
+export async function registrarUsuarioAction(data: RegisterFormData): Promise<UsuarioSinPassword> {
   // Validar que el email no exista
   const { data: existente } = await supabase
     .from('usuarios')
     .select('email')
     .eq('email', data.email)
-    .single()
+    .single() as any
 
   if (existente) {
     throw new Error('El email ya está registrado')
   }
 
-  // Hashear contraseña con bcrypt
+  // Hashear contraseña
   const salt = await bcrypt.genSalt(10)
   const hash = await bcrypt.hash(data.contraseña, salt)
 
@@ -38,7 +34,7 @@ export async function registrarUsuarioAction(data: {
       estado: false
     })
     .select('id_usuario, nombre_usuario, email, tipo, estado, fecha_creacion')
-    .single()
+    .single() as any
 
   if (error) {
     throw new Error(error.message)
@@ -53,7 +49,7 @@ export async function loginUsuarioAction(email: string, contraseña: string): Pr
     .from('usuarios')
     .select('*')
     .eq('email', email)
-    .single()
+    .single() as any
 
   if (error || !usuario) {
     throw new Error('Email o contraseña incorrectos')
@@ -64,12 +60,14 @@ export async function loginUsuarioAction(email: string, contraseña: string): Pr
     throw new Error('Usuario inactivo. Espera la aprobación del administrador.')
   }
 
-  // Comparar contraseña con bcrypt
+  // Comparar contraseña
   const valid = await bcrypt.compare(contraseña, usuario.contraseña)
   if (!valid) {
     throw new Error('Email o contraseña incorrectos')
   }
 
+  // Eliminar la contraseña del objeto retornado
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { contraseña: _, ...usuarioSinPassword } = usuario
   return usuarioSinPassword as UsuarioSinPassword
 }
@@ -120,7 +118,7 @@ export async function getCurrentUserAction(): Promise<SessionUser | null> {
     .from('usuarios')
     .select('id_usuario, nombre_usuario, email, tipo, estado, fecha_creacion')
     .eq('id_usuario', parseInt(usuarioId))
-    .single()
+    .single() as any
 
   if (error || !usuario) return null
 

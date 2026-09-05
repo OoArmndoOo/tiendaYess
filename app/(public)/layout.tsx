@@ -11,14 +11,12 @@ export default async function PublicLayout({
   const usuario = await getCurrentUserAction()
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header usuario={usuario} />
-      <main className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          {children}
-        </div>
+      <main className="flex-1 container mx-auto px-4 py-8">
+        {children}
       </main>
       <Footer />
-    </>
+    </div>
   )
 }

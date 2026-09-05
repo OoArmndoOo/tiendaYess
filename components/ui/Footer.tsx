@@ -1,15 +1,10 @@
 // components/ui/Footer.tsx
 import Link from 'next/link'
-import { 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Youtube 
-} from 'lucide-react'
+import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white mt-12">
+    <footer className="bg-gray-900 text-white mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo y descripción */}
@@ -17,7 +12,7 @@ export default function Footer() {
             <h3 className="text-2xl font-bold text-primary-400 mb-4">
               VentasYesStyle
             </h3>
-            <p className="text-gray-400">
+            <p className="text-gray-400 max-w-md">
               Tu tienda online de moda y estilo. Encuentra los mejores productos 
               con la calidad y precio que mereces.
             </p>
@@ -40,6 +35,11 @@ export default function Footer() {
               <li>
                 <Link href="/categoria/accesorios" className="hover:text-white transition-colors">
                   Accesorios
+                </Link>
+              </li>
+              <li>
+                <Link href="/categoria/calzado" className="hover:text-white transition-colors">
+                  Calzado
                 </Link>
               </li>
             </ul>

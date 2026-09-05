@@ -5,6 +5,7 @@ import ProductCard from '@/components/ui/ProductCard'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
+  // Obtener productos activos con sus relaciones
   const { data: productos, error } = await supabase
     .from('productos')
     .select(`
@@ -14,8 +15,12 @@ export default async function HomePage() {
       precio,
       detalles,
       estado,
-      tipos (nombre_tipo),
-      fotos (foto)
+      tipos (
+        nombre_tipo
+      ),
+      fotos (
+        foto
+      )
     `)
     .eq('estado', true)
     .order('id_producto', { ascending: false })
@@ -25,23 +30,26 @@ export default async function HomePage() {
     return (
       <div className="text-center py-12">
         <p className="text-red-500">Error al cargar los productos</p>
+        <p className="text-sm text-gray-500 mt-2">{error.message}</p>
       </div>
     )
   }
 
   return (
-    <div>
+    <div className="w-full">
+      {/* Hero / Banner */}
       <section className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-16 rounded-xl mb-8">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">
             Bienvenido a VentasYesStyle
           </h1>
-          <p className="text-xl md:text-2xl opacity-90">
+          <p className="text-lg md:text-2xl opacity-90">
             Encuentra los mejores productos de moda y estilo
           </p>
         </div>
       </section>
 
+      {/* Productos */}
       <section>
         <h2 className="text-2xl font-bold mb-6 text-gray-800">
           Productos Destacados
@@ -50,7 +58,10 @@ export default async function HomePage() {
         {productos && productos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {productos.map((producto: any) => (
-              <ProductCard key={producto.id_producto} producto={producto} />
+              <ProductCard 
+                key={producto.id_producto} 
+                producto={producto} 
+              />
             ))}
           </div>
         ) : (
