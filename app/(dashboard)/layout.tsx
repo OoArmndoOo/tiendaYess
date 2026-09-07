@@ -10,7 +10,6 @@ export default async function DashboardLayout({
 }) {
   const usuario = await getCurrentUserAction()
   
-  // Si el usuario no está autenticado, redirigir al login
   if (!usuario) {
     redirect('/')
   }

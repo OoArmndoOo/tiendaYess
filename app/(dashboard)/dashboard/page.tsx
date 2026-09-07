@@ -1,107 +1,96 @@
 // app/(dashboard)/dashboard/page.tsx
 import { supabase } from '@/lib/supabaseClient'
-import { Package, ShoppingBag, Users, TrendingUp, AlertCircle, Calendar, Clock } from 'lucide-react'
+import { Package, ShoppingBag, Users, TrendingUp, AlertCircle, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { cache } from 'react'
+
+// ========== CACHÉ DE CONSULTAS ==========
+const getDashboardData = cache(async () => {
+  // Ejecutar todas las consultas en paralelo
+  const [
+    totalProductos,
+    totalUsuarios,
+    productosBajoStock,
+    productosAgotados,
+    usuariosInactivos,
+    totalRegistrosHoy,
+    productos,
+    ultimosProductos,
+    ultimosMovimientos
+  ] = await Promise.all([
+    // Contadores simples
+    supabase.from('productos').select('*', { count: 'exact', head: true }),
+    supabase.from('usuarios').select('*', { count: 'exact', head: true }),
+    supabase.from('productos').select('*', { count: 'exact', head: true }).lt('cantidad', 10),
+    supabase.from('productos').select('*', { count: 'exact', head: true }).eq('cantidad', 0),
+    supabase.from('usuarios').select('*', { count: 'exact', head: true }).eq('estado', false),
+    supabase.from('registros').select('*', { count: 'exact', head: true })
+      .gte('fecha_registro', new Date(new Date().setHours(0,0,0,0)).toISOString()),
+    // Productos para calcular valor
+    supabase.from('productos').select('precio, cantidad'),
+    // Últimos 5 productos
+    supabase.from('productos')
+      .select('id_producto, nombre_producto, precio, estado, tipos(nombre_tipo), fotos(foto)')
+      .order('fecha_creacion', { ascending: false })
+      .limit(5),
+    // Últimos 5 movimientos
+    supabase.from('registros')
+      .select('id_registro, detalle_registro, fecha_registro, usuarios(nombre_usuario), productos(nombre_producto)')
+      .order('fecha_registro', { ascending: false })
+      .limit(5)
+  ])
+
+  return {
+    totalProductos: totalProductos.count || 0,
+    totalUsuarios: totalUsuarios.count || 0,
+    productosBajoStock: productosBajoStock.count || 0,
+    productosAgotados: productosAgotados.count || 0,
+    usuariosInactivos: usuariosInactivos.count || 0,
+    totalRegistrosHoy: totalRegistrosHoy.count || 0,
+    valorInventario: productos.data?.reduce((total, p) => total + (p.precio * p.cantidad), 0) || 0,
+    ultimosProductos: ultimosProductos.data || [],
+    ultimosMovimientos: ultimosMovimientos.data || []
+  }
+})
 
 export default async function DashboardPage() {
-  // Estadísticas generales
-  const { count: totalProductos } = await supabase
-    .from('productos')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: totalUsuarios } = await supabase
-    .from('usuarios')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: productosBajoStock } = await supabase
-    .from('productos')
-    .select('*', { count: 'exact', head: true })
-    .lt('cantidad', 10)
-
-  const { count: productosAgotados } = await supabase
-    .from('productos')
-    .select('*', { count: 'exact', head: true })
-    .eq('cantidad', 0)
-
-  const { data: productos } = await supabase
-    .from('productos')
-    .select('precio, cantidad')
-
-  const { data: usuariosInactivos } = await supabase
-    .from('usuarios')
-    .select('*', { count: 'exact', head: true })
-    .eq('estado', false)
-
-  const { count: totalRegistrosHoy } = await supabase
-    .from('registros')
-    .select('*', { count: 'exact', head: true })
-    .gte('fecha_registro', new Date(new Date().setHours(0,0,0,0)).toISOString())
-
-  const valorInventario = productos?.reduce((total, p) => total + (p.precio * p.cantidad), 0) || 0
+  const data = await getDashboardData()
 
   const estadisticas = [
     {
       titulo: 'Total Productos',
-      valor: totalProductos || 0,
+      valor: data.totalProductos,
       icono: Package,
       color: 'bg-blue-100 text-blue-600',
       link: '/dashboard/inventario'
     },
     {
       titulo: 'Usuarios Registrados',
-      valor: totalUsuarios || 0,
+      valor: data.totalUsuarios,
       icono: Users,
       color: 'bg-green-100 text-green-600',
       link: '/dashboard/usuarios',
-      detalle: `${usuariosInactivos || 0} inactivos`
+      detalle: `${data.usuariosInactivos} inactivos`
     },
     {
       titulo: 'Stock Bajo',
-      valor: productosBajoStock || 0,
+      valor: data.productosBajoStock,
       icono: AlertCircle,
       color: 'bg-yellow-100 text-yellow-600',
       link: '/dashboard/inventario',
-      detalle: `${productosAgotados || 0} agotados`
+      detalle: `${data.productosAgotados} agotados`
     },
     {
       titulo: 'Valor Inventario',
-      valor: `Bs ${valorInventario.toLocaleString()}`,
+      valor: `Bs ${data.valorInventario.toLocaleString()}`,
       icono: TrendingUp,
       color: 'bg-purple-100 text-purple-600',
       link: '/dashboard/inventario'
     },
   ]
 
-  // Últimos productos (5 más recientes)
-  const { data: ultimosProductos } = await supabase
-    .from('productos')
-    .select(`
-      id_producto,
-      nombre_producto,
-      precio,
-      estado,
-      tipos (nombre_tipo),
-      fotos (foto)
-    `)
-    .order('fecha_creacion', { ascending: false })
-    .limit(5)
-
-  // Últimos movimientos (5 más recientes)
-  const { data: ultimosMovimientos } = await supabase
-    .from('registros')
-    .select(`
-      id_registro,
-      detalle_registro,
-      fecha_registro,
-      usuarios (nombre_usuario),
-      productos (nombre_producto)
-    `)
-    .order('fecha_registro', { ascending: false })
-    .limit(5)
-
   return (
     <div>
-      {/* Resumen */}
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-800">Panel de Control</h2>
         <p className="text-sm text-gray-500">
@@ -135,9 +124,8 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      {/* Actividad reciente */}
+      {/* Últimos productos y movimientos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Últimos productos */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-800">Últimos Productos</h3>
@@ -145,9 +133,9 @@ export default async function DashboardPage() {
               Ver todos →
             </Link>
           </div>
-          {ultimosProductos && ultimosProductos.length > 0 ? (
+          {data.ultimosProductos && data.ultimosProductos.length > 0 ? (
             <div className="space-y-3">
-              {ultimosProductos.map((producto: any) => (
+              {data.ultimosProductos.map((producto: any) => (
                 <div key={producto.id_producto} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
                   <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-500 overflow-hidden flex-shrink-0">
                     {producto.fotos?.[0]?.foto ? (
@@ -176,22 +164,19 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Últimos movimientos */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-800">Actividad Reciente</h3>
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-400">
-                Hoy: {totalRegistrosHoy || 0}
-              </span>
+              <span className="text-xs text-gray-400">Hoy: {data.totalRegistrosHoy}</span>
               <Link href="/dashboard/registros" className="text-sm text-primary-500 hover:underline">
                 Ver todos →
               </Link>
             </div>
           </div>
-          {ultimosMovimientos && ultimosMovimientos.length > 0 ? (
+          {data.ultimosMovimientos && data.ultimosMovimientos.length > 0 ? (
             <div className="space-y-3">
-              {ultimosMovimientos.map((movimiento: any) => {
+              {data.ultimosMovimientos.map((movimiento: any) => {
                 let colorClass = 'text-gray-600'
                 if (movimiento.detalle_registro.includes('Creación')) colorClass = 'text-green-600'
                 if (movimiento.detalle_registro.includes('Eliminación')) colorClass = 'text-red-600'

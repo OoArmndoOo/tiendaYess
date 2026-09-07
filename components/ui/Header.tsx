@@ -8,7 +8,7 @@ import { logoutUsuarioAction } from '@/lib/actions/auth'
 import LoginForm from '@/components/forms/LoginForm'
 import RegisterForm from '@/components/forms/RegisterForm'
 import { SessionUser } from '@/types'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, User } from 'lucide-react'
 
 interface HeaderProps {
   usuario?: SessionUser | null
@@ -37,25 +37,12 @@ export default function Header({ usuario = null }: HeaderProps) {
               VentasYesStyle
             </Link>
 
-            {/* Navegación Desktop */}
-            <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/categoria/ropa" className="text-gray-600 hover:text-primary-600 transition-colors">
-                Ropa
-              </Link>
-              <Link href="/categoria/accesorios" className="text-gray-600 hover:text-primary-600 transition-colors">
-                Accesorios
-              </Link>
-              <Link href="/categoria/calzado" className="text-gray-600 hover:text-primary-600 transition-colors">
-                Calzado
-              </Link>
-            </nav>
-
-            {/* Acciones - Desktop */}
+            {/* ====== ACCIONES EN ESCRITORIO (visibles solo en desktop) ====== */}
             <div className="hidden md:flex items-center space-x-4">
               {isLoggedIn ? (
                 <>
-                  <Link
-                    href="/dashboard"
+                  <Link 
+                    href="/dashboard" 
                     className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
                   >
                     <span className="font-medium">{usuario.nombre_usuario}</span>
@@ -88,7 +75,7 @@ export default function Header({ usuario = null }: HeaderProps) {
               )}
             </div>
 
-            {/* Botón Hamburguesa - visible SOLO en móvil */}
+            {/* Botón Hamburguesa - visible solo en móvil */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -103,44 +90,26 @@ export default function Header({ usuario = null }: HeaderProps) {
           </div>
         </div>
 
-        {/* Menú móvil desplegable - con posición fija para que cubra toda la pantalla */}
+        {/* ====== MENÚ MÓVIL (con nombre y cerrar sesión) ====== */}
         {isMenuOpen && (
-          <div 
-            className="md:hidden fixed inset-0 top-16 bg-white z-50 overflow-y-auto"
-            style={{ height: 'calc(100vh - 64px)' }}
-          >
-            <div className="container mx-auto px-4 py-6 space-y-4">
-              {/* Categorías */}
-              <Link
-                href="/categoria/ropa"
-                className="block px-4 py-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Ropa
-              </Link>
-              <Link
-                href="/categoria/accesorios"
-                className="block px-4 py-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Accesorios
-              </Link>
-              <Link
-                href="/categoria/calzado"
-                className="block px-4 py-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Calzado
-              </Link>
-
-              <div className="border-t border-gray-200 my-4"></div>
-
-              {/* Acciones móvil */}
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-50">
+            <div className="container mx-auto px-4 py-4 space-y-3">
               {isLoggedIn ? (
                 <>
-                  <Link
-                    href="/dashboard"
-                    className="block px-4 py-4 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors text-lg font-medium"
+                  {/* Nombre del usuario */}
+                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg">
+                    <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold">
+                      {usuario.nombre_usuario.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800">{usuario.nombre_usuario}</p>
+                      <p className="text-xs text-gray-500">{usuario.tipo === 'admin' ? 'Administrador' : 'Usuario'}</p>
+                    </div>
+                  </div>
+
+                  <Link 
+                    href="/dashboard" 
+                    className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Dashboard
@@ -150,7 +119,7 @@ export default function Header({ usuario = null }: HeaderProps) {
                       setIsMenuOpen(false)
                       handleLogout()
                     }}
-                    className="block w-full text-left px-4 py-4 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-lg font-medium"
+                    className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     Cerrar Sesión
                   </button>
@@ -162,7 +131,7 @@ export default function Header({ usuario = null }: HeaderProps) {
                       setIsMenuOpen(false)
                       setIsLoginOpen(true)
                     }}
-                    className="block w-full text-left px-4 py-4 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors text-lg font-medium"
+                    className="block w-full text-left px-4 py-3 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors font-medium"
                   >
                     Iniciar Sesión
                   </button>
@@ -171,7 +140,7 @@ export default function Header({ usuario = null }: HeaderProps) {
                       setIsMenuOpen(false)
                       setIsRegisterOpen(true)
                     }}
-                    className="block w-full text-left px-4 py-4 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors text-lg font-medium"
+                    className="block w-full text-left px-4 py-3 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors font-medium"
                   >
                     Registrarse
                   </button>
@@ -184,8 +153,8 @@ export default function Header({ usuario = null }: HeaderProps) {
 
       {/* Modales */}
       {isLoginOpen && (
-        <LoginForm
-          onClose={() => setIsLoginOpen(false)}
+        <LoginForm 
+          onClose={() => setIsLoginOpen(false)} 
           onSwitchToRegister={() => {
             setIsLoginOpen(false)
             setIsRegisterOpen(true)
@@ -193,7 +162,7 @@ export default function Header({ usuario = null }: HeaderProps) {
         />
       )}
       {isRegisterOpen && (
-        <RegisterForm
+        <RegisterForm 
           onClose={() => setIsRegisterOpen(false)}
           onSwitchToLogin={() => {
             setIsRegisterOpen(false)
