@@ -13,44 +13,16 @@ export default function Footer() {
               VentasYesStyle
             </h3>
             <p className="text-gray-400 max-w-md">
-              Tu tienda online de moda y estilo. Encuentra los mejores productos 
-              con la calidad y precio que mereces.
+              Tu tienda online de productos de YesStyle.
             </p>
           </div>
-
-          {/* Enlaces rápidos */}
-          <div>
-            <h4 className="font-semibold text-white mb-4">Enlaces</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <Link href="/" className="hover:text-white transition-colors">
-                  Inicio
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/ropa" className="hover:text-white transition-colors">
-                  Ropa
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/accesorios" className="hover:text-white transition-colors">
-                  Accesorios
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/calzado" className="hover:text-white transition-colors">
-                  Calzado
-                </Link>
-              </li>
-            </ul>
-          </div>
-
+          
           {/* Redes sociales */}
           <div>
             <h4 className="font-semibold text-white mb-4">Síguenos</h4>
             <div className="flex space-x-4">
               <a 
-                href="#" 
+                href="https://www.facebook.com/" 
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="Facebook"
               >

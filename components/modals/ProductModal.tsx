@@ -80,7 +80,7 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
 
   return (
     <>
-      <div 
+      <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
         onClick={handleBackdropClick}
       >
@@ -104,7 +104,7 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
           <div className="overflow-y-auto max-h-[calc(95vh-4rem)] sm:max-h-[calc(90vh-4rem)] p-3 sm:p-6">
             {/* ====== GALERÍA DE IMÁGENES ====== */}
             <div className="mb-4 sm:mb-6">
-              <div 
+              <div
                 className="relative bg-gray-100 rounded-xl overflow-hidden aspect-[4/3] sm:aspect-video cursor-pointer group"
                 onClick={() => {
                   if (fotos.length > 0) {
@@ -115,27 +115,27 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
                 {fotos.length > 0 ? (
                   <>
                     {/* Fondo difuminado */}
-                    <div 
+                    <div
                       className="absolute inset-0 bg-cover bg-center blur-xl opacity-100"
                       style={{ backgroundImage: `url(${fotos[imagenActual]?.foto})` }}
                     />
-                    
+
                     {/* Imagen principal */}
                     <div className="relative w-full h-full flex items-center justify-center">
-                      <img 
-                        src={fotos[imagenActual]?.foto} 
+                      <img
+                        src={fotos[imagenActual]?.foto}
                         alt={`${producto.nombre_producto} - Imagen ${imagenActual + 1}`}
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    
+
                     {/* Overlay de "tocar para expandir" */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                       <div className="bg-white/90 rounded-full p-2 sm:p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
                         <Expand className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
                       </div>
                     </div>
-                    
+
                     {/* Controles del carrusel */}
                     {fotos.length > 1 && (
                       <>
@@ -155,7 +155,7 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
                         </button>
                       </>
                     )}
-                    
+
                     {/* Contador de posición */}
                     <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 px-2 py-0.5 sm:px-3 sm:py-1 bg-black/60 backdrop-blur-sm text-white text-xs sm:text-sm rounded-full">
                       {imagenActual + 1} / {fotos.length}
@@ -168,7 +168,7 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
                   </div>
                 )}
               </div>
-              
+
               {/* ====== MINIATURAS ====== */}
               {fotos.length > 1 && (
                 <div className="mt-3 sm:mt-4">
@@ -177,14 +177,13 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
                       <button
                         key={index}
                         onClick={() => setImagenActual(index)}
-                        className={`relative flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                          index === imagenActual 
-                            ? 'border-primary-500 ring-2 ring-primary-200 scale-105' 
+                        className={`relative flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all ${index === imagenActual
+                            ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
                             : 'border-gray-200 hover:border-gray-400 hover:scale-105'
-                        }`}
+                          }`}
                       >
-                        <img 
-                          src={foto.foto} 
+                        <img
+                          src={foto.foto}
                           alt={`Miniatura ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
@@ -207,6 +206,16 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
                 <h3 className="text-lg sm:text-2xl font-bold text-gray-800">
                   {producto.nombre_producto}
                 </h3>
+
+                {/* Botón de WhatsApp automatizado */}
+                <a
+                  href={`https://wa.me/59163944788?text=${encodeURIComponent(`Hola, estoy interesado en el producto: ${producto.nombre_producto}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="whatsapp-btn"
+                >
+                  Consultar por WhatsApp
+                </a>
               </div>
 
               <div className="flex items-center gap-2">
