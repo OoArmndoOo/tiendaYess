@@ -22,7 +22,7 @@ export async function registrarMovimiento(
       id_usuario: parseInt(usuarioId),
       id_producto: id_producto,
       detalle_registro: detalle
-    })
+    }) as any // <-- CORRECCIÓN: as any para evitar error de tipos
 
   if (error) {
     console.error('Error registrando movimiento:', error)

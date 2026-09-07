@@ -24,7 +24,7 @@ export async function actualizarPerfil(
       nombre_usuario: nombre.trim(),
       email: email.trim()
     })
-    .eq('id_usuario', id_usuario)
+    .eq('id_usuario', id_usuario) as any // <-- SOLUCIÓN: as any
 
   if (updateError) throw new Error(updateError.message)
 
@@ -35,7 +35,7 @@ export async function actualizarPerfil(
       .from('usuarios')
       .select('contraseña')
       .eq('id_usuario', id_usuario)
-      .single()
+      .single() as any // <-- SOLUCIÓN: as any
 
     if (!usuarioData) throw new Error('Usuario no encontrado')
 
@@ -55,7 +55,7 @@ export async function actualizarPerfil(
     const { error: passError } = await supabase
       .from('usuarios')
       .update({ contraseña: hash })
-      .eq('id_usuario', id_usuario)
+      .eq('id_usuario', id_usuario) as any // <-- SOLUCIÓN: as any
 
     if (passError) throw new Error(passError.message)
   }

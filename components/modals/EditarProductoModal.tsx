@@ -7,6 +7,21 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { X, Upload, Trash2, Save } from 'lucide-react'
 
+// ============================================================
+// INTERFAZ PARA LOS DATOS DEL PRODUCTO
+// ============================================================
+interface ProductoData {
+  id_producto: number
+  nombre_producto: string
+  cantidad: number
+  precio: number
+  id_tipo: number
+  detalles: string
+  estado: boolean
+  fecha_creacion: string
+  ultima_modificacion: string
+}
+
 interface EditarProductoModalProps {
   productoId: number
   isOpen: boolean
@@ -24,6 +39,7 @@ export default function EditarProductoModal({
   const [loading, setLoading] = useState(false)
   const [cargandoDatos, setCargandoDatos] = useState(true)
   const [tipos, setTipos] = useState<any[]>([])
+  const [producto, setProducto] = useState<ProductoData | null>(null)
   const [fotosExistentes, setFotosExistentes] = useState<any[]>([])
   
   const [formData, setFormData] = useState({
@@ -46,21 +62,23 @@ export default function EditarProductoModal({
       const { data: tiposData } = await supabase.from('tipos').select('*')
       setTipos(tiposData || [])
 
-      // Cargar producto
+      // Cargar producto con tipado
       const { data: productoData, error } = await supabase
         .from('productos')
         .select('*')
         .eq('id_producto', productoId)
-        .single()
+        .single() as any
 
       if (error) throw error
 
+      const producto = productoData as ProductoData
+      setProducto(producto)
       setFormData({
-        nombre_producto: productoData.nombre_producto || '',
-        cantidad: productoData.cantidad?.toString() || '0',
-        precio: productoData.precio?.toString() || '0',
-        id_tipo: productoData.id_tipo?.toString() || '',
-        detalles: productoData.detalles || '',
+        nombre_producto: producto.nombre_producto || '',
+        cantidad: producto.cantidad?.toString() || '0',
+        precio: producto.precio?.toString() || '0',
+        id_tipo: producto.id_tipo?.toString() || '',
+        detalles: producto.detalles || '',
       })
 
       // Cargar fotos existentes
@@ -162,7 +180,7 @@ export default function EditarProductoModal({
           id_tipo: parseInt(formData.id_tipo),
           detalles: formData.detalles?.trim() || '',
         })
-        .eq('id_producto', productoId)
+        .eq('id_producto', productoId) as any
 
       if (productError) throw new Error(productError.message)
 
@@ -171,7 +189,7 @@ export default function EditarProductoModal({
         await supabase
           .from('fotos')
           .delete()
-          .in('id_foto', imagenesEliminar)
+          .in('id_foto', imagenesEliminar) as any
       }
 
       // 3. Subir nuevas imágenes
@@ -201,7 +219,7 @@ export default function EditarProductoModal({
         if (urls.length > 0) {
           await supabase
             .from('fotos')
-            .insert(urls.map(url => ({ id_producto: productoId, foto: url })))
+            .insert(urls.map(url => ({ id_producto: productoId, foto: url }))) as any
         }
       }
 

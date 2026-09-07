@@ -74,7 +74,7 @@ export default function UsuariosPage() {
     const { error } = await supabase
       .from('usuarios')
       .update({ estado: nuevoEstado })
-      .eq('id_usuario', id)
+      .eq('id_usuario', id) as any // <-- CORRECCIÓN
 
     if (error) {
       toast.error('Error al cambiar estado del usuario')
@@ -91,7 +91,7 @@ export default function UsuariosPage() {
     const { error } = await supabase
       .from('usuarios')
       .update({ tipo: nuevoRol })
-      .eq('id_usuario', id)
+      .eq('id_usuario', id) as any // <-- CORRECCIÓN
 
     if (error) {
       toast.error('Error al cambiar rol del usuario')

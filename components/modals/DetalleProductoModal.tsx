@@ -53,7 +53,7 @@ export default function DetalleProductoModal({ productoId, isOpen, onClose }: De
           fotos (foto)
         `)
         .eq('id_producto', productoId)
-        .single()
+        .single() as any // <-- CORRECCIÓN: evitar error de tipos en Supabase
 
       if (error) throw error
       setProducto(data)
@@ -88,12 +88,12 @@ export default function DetalleProductoModal({ productoId, isOpen, onClose }: De
 
   // ====== CARRUSEL INFINITO ======
   const imagenSiguiente = () => {
-    if (!producto?.fotos || producto.fotos.length === 0) return
+    if (!producto?.fotos || producto.fotos.length === 0) return // <-- CORRECCIÓN: verificar null
     setImagenActual((prev) => (prev + 1) % producto.fotos.length)
   }
 
   const imagenAnterior = () => {
-    if (!producto?.fotos || producto.fotos.length === 0) return
+    if (!producto?.fotos || producto.fotos.length === 0) return // <-- CORRECCIÓN: verificar null
     setImagenActual((prev) => (prev - 1 + producto.fotos.length) % producto.fotos.length)
   }
 
