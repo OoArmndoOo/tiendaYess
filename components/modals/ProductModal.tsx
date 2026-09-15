@@ -47,8 +47,38 @@ const formatearPrecio = (precio: number) =>
     currency: 'BOB',
   }).format(precio)
 
-const limpiarTelefono = (telefono: string | null | undefined) =>
-  telefono ? telefono.replace(/[^0-9]/g, '') : null
+/**
+ * Limpia el teléfono y agrega el código de país de Bolivia (+591)
+ * si el número no lo tiene.
+ *
+ * Ejemplos:
+ * - "63944788"        → "59163944788"
+ * - "+591 63944788"   → "59163944788"
+ * - "59163944788"     → "59163944788"
+ * - "0059163944788"   → "59163944788"
+ */
+const limpiarTelefonoBolivia = (telefono: string | null | undefined): string | null => {
+  if (!telefono) return null
+
+  // 1. Quitar todo lo que no sea número
+  let limpio = telefono.replace(/[^0-9]/g, '')
+
+  // 2. Si está vacío, devolver null
+  if (!limpio) return null
+
+  // 3. Quitar prefijo internacional 00 si existe (ej: 00591...)
+  if (limpio.startsWith('00')) {
+    limpio = limpio.substring(2)
+  }
+
+  // 4. Si ya empieza con 591, devolverlo tal cual
+  if (limpio.startsWith('591')) {
+    return limpio
+  }
+
+  // 5. Si no, agregar el código de Bolivia
+  return `591${limpio}`
+}
 
 const construirWhatsAppUrl = (
   telefono: string | null,
@@ -108,7 +138,10 @@ export default function ProductModal({ producto, onClose }: ProductModalProps) {
   // ====== DATOS DERIVADOS ======
   const precioFormateado = formatearPrecio(producto.precio)
   const imageUrls = fotos.map((f) => f.foto)
-  const telefonoLimpio = limpiarTelefono(producto.usuarios?.telefono)
+
+  // Limpiar teléfono y agregar código de país Bolivia
+  const telefonoLimpio = limpiarTelefonoBolivia(producto.usuarios?.telefono)
+
   const mensajeWhatsApp = `Hola ${producto.usuarios?.nombre_usuario || ''}, estoy interesado en el producto: *${producto.nombre_producto}* (Bs ${producto.precio.toFixed(2)})`
   const whatsappUrl = construirWhatsAppUrl(telefonoLimpio, mensajeWhatsApp)
 
@@ -351,7 +384,7 @@ function Miniaturas({ fotos, imagenActual, onSeleccionar }: MiniaturasProps) {
             )}
           </button>
         ))}
-      </div>      
+      </div>
     </div>
   )
 }
@@ -375,7 +408,8 @@ function InfoProducto({ producto, precioFormateado }: InfoProductoProps) {
         </span>
       </div>
 
-      <div className="flex items-center gap-2">        
+      <div className="flex items-center gap-2">
+        <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         <span className="text-xl sm:text-2xl font-bold text-primary-600">
           {precioFormateado}
         </span>
