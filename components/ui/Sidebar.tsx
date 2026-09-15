@@ -3,13 +3,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  Package, 
-  PlusCircle, 
-  Tag, 
-  Users, 
-  ClipboardList, 
+import {
+  LayoutDashboard,
+  Package,
+  PlusCircle,
+  Tag,
+  Users,
+  ClipboardList,
   UserCog,
   LogOut,
   X,
@@ -33,8 +33,8 @@ export default function Sidebar({ usuario, isOpen, onClose }: SidebarProps) {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard', adminOnly: false },
     { icon: Package, label: 'Inventario', href: '/dashboard/inventario', adminOnly: false },
-    { icon: PlusCircle, label: 'Crear Producto', href: '/dashboard/crear-producto', adminOnly: false },
     { icon: Tag, label: 'Crear Tipo', href: '/dashboard/crear-tipo', adminOnly: false },
+    { icon: PlusCircle, label: 'Crear Producto', href: '/dashboard/crear-producto', adminOnly: false },
     { icon: Users, label: 'Usuarios', href: '/dashboard/usuarios', adminOnly: true },
     { icon: ClipboardList, label: 'Registros', href: '/dashboard/registros', adminOnly: true },
     { icon: UserCog, label: 'Perfil', href: '/dashboard/perfil', adminOnly: false },

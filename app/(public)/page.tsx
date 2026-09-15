@@ -5,7 +5,7 @@ import ProductList from '@/components/ui/ProductList'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  // Obtener productos activos
+  // Obtener productos activos con datos del vendedor
   const { data: productos, error: productError } = await supabase
     .from('productos')
     .select(`
@@ -16,8 +16,10 @@ export default async function HomePage() {
       detalles,
       estado,
       id_tipo,
+      id_usuario,
       tipos (nombre_tipo),
-      fotos (foto)
+      fotos (foto),
+      usuarios (telefono, nombre_usuario)
     `)
     .eq('estado', true)
     .order('id_producto', { ascending: false })

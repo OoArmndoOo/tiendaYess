@@ -7,8 +7,8 @@ import { Toaster } from 'sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'VentasYesStyle - Tienda de Moda y Estilo',
-  description: 'Encuentra los mejores productos de moda, ropa, accesorios y calzado en VentasYesStyle',
+  title: 'Venta de Productos de YesStyle',
+  description: 'Encuentra productos directamente comprados de la pagina oficial de YesStyle',
 }
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         {children}
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-right" richColors duration={1000} />
       </body>
     </html>
   )

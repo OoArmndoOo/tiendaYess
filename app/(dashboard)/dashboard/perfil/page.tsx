@@ -7,13 +7,15 @@ import { supabase } from '@/lib/supabaseClient'
 import { getCurrentUserAction } from '@/lib/actions/auth'
 import { SessionUser } from '@/types'
 import { toast } from 'sonner'
-import { User, Mail, Lock, Save, Eye, EyeOff } from 'lucide-react'
+import { User, Mail, Lock, Save, Eye, EyeOff, Phone } from 'lucide-react'
+import bcrypt from 'bcryptjs'
 
 export default function PerfilPage() {
   const router = useRouter()
   const [usuario, setUsuario] = useState<SessionUser | null>(null)
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
+  const [telefono, setTelefono] = useState('') // <-- NUEVO
   const [contraseñaActual, setContraseñaActual] = useState('')
   const [nuevaContraseña, setNuevaContraseña] = useState('')
   const [confirmarContraseña, setConfirmarContraseña] = useState('')
@@ -27,6 +29,7 @@ export default function PerfilPage() {
         setUsuario(user)
         setNombre(user.nombre_usuario)
         setEmail(user.email)
+        setTelefono(user.telefono || '') // <-- NUEVO
       }
     }
     loadUser()
@@ -49,41 +52,39 @@ export default function PerfilPage() {
           setLoading(false)
           return
         }
-      }
-
-      // 1. Actualizar nombre y email
-      const { error: updateError } = await supabase
-        .from('usuarios')
-        .update({
-          nombre_usuario: nombre.trim(),
-          email: email.trim()
-        })
-        .eq('id_usuario', usuario?.id_usuario)
-
-      if (updateError) throw new Error(updateError.message)
-
-      // 2. Si se quiere cambiar la contraseña
-      if (nuevaContraseña) {
-        // Verificar que la contraseña actual sea correcta
         if (!contraseñaActual) {
           toast.error('Debes ingresar tu contraseña actual para cambiarla')
           setLoading(false)
           return
         }
+      }
 
+      // 1. Actualizar nombre, email y teléfono
+      const { error: updateError } = await supabase
+        .from('usuarios')
+        .update({
+          nombre_usuario: nombre.trim(),
+          email: email.trim(),
+          telefono: telefono.trim() || null // <-- NUEVO CAMPO
+        })
+        .eq('id_usuario', usuario?.id_usuario) as any // <-- CORRECCIÓN TYPESCRIPT
+
+      if (updateError) throw new Error(updateError.message)
+
+      // 2. Si se quiere cambiar la contraseña
+      if (nuevaContraseña) {
         // Obtener la contraseña hasheada actual
         const { data: usuarioData, error: fetchError } = await supabase
           .from('usuarios')
           .select('contraseña')
           .eq('id_usuario', usuario?.id_usuario)
-          .single()
+          .single() as any // <-- CORRECCIÓN TYPESCRIPT
 
         if (fetchError || !usuarioData) {
           throw new Error('No se pudo verificar la contraseña actual')
         }
 
-        // Verificar la contraseña actual usando bcryptjs
-        const bcrypt = require('bcryptjs')
+        // Verificar la contraseña actual
         const isValid = await bcrypt.compare(contraseñaActual, usuarioData.contraseña)
         
         if (!isValid) {
@@ -99,7 +100,7 @@ export default function PerfilPage() {
         const { error: passError } = await supabase
           .from('usuarios')
           .update({ contraseña: hash })
-          .eq('id_usuario', usuario?.id_usuario)
+          .eq('id_usuario', usuario?.id_usuario) as any // <-- CORRECCIÓN TYPESCRIPT
 
         if (passError) throw new Error(passError.message)
       }
@@ -177,6 +178,24 @@ export default function PerfilPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
                 required
               />
+            </div>
+
+            {/* CAMPO TELÉFONO - NUEVO */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Phone className="w-4 h-4 inline mr-1" />
+                Teléfono
+              </label>
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="76543210"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Opcional. Este campo solo puede ser editado por ti.
+              </p>
             </div>
           </div>
 

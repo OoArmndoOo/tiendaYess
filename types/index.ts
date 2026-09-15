@@ -5,6 +5,7 @@ export interface Usuario {
   id_usuario: number;
   nombre_usuario: string;
   email: string;
+  telefono: string | null;
   contraseña: string;
   fecha_creacion: Date;
   estado: boolean;
@@ -17,6 +18,7 @@ export interface SessionUser {
   id_usuario: number;
   nombre_usuario: string;
   email: string;
+  telefono: string | null;
   tipo: 'admin' | 'user';
   estado: boolean;
   fecha_creacion: Date;

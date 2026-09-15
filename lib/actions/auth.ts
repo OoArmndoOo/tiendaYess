@@ -116,11 +116,19 @@ export async function getCurrentUserAction(): Promise<SessionUser | null> {
 
   const { data: usuario, error } = await supabase
     .from('usuarios')
-    .select('id_usuario, nombre_usuario, email, tipo, estado, fecha_creacion')
+    .select('id_usuario, nombre_usuario, email, telefono, tipo, estado, fecha_creacion')
     .eq('id_usuario', parseInt(usuarioId))
     .single() as any
 
   if (error || !usuario) return null
 
   return usuario as SessionUser
+}
+export async function getCurrentUserIdAction(): Promise<number | null> {
+  const cookieStore = await cookies()
+  const usuarioId = cookieStore.get('usuario_id')?.value
+  
+  if (!usuarioId) return null
+  
+  return parseInt(usuarioId)
 }
