@@ -409,7 +409,6 @@ function InfoProducto({ producto, precioFormateado }: InfoProductoProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         <span className="text-xl sm:text-2xl font-bold text-primary-600">
           {precioFormateado}
         </span>
