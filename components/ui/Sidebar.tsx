@@ -77,7 +77,7 @@ export default function Sidebar({ usuario, isOpen, onClose }: SidebarProps) {
       {/* Cabecera del sidebar */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <Link href="/dashboard" className="text-xl font-bold text-primary-600" onClick={onClose}>
-          VentasYesStyle
+        Alis Shop
         </Link>
         <button
           onClick={onClose}

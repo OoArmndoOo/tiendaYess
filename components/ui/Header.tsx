@@ -1,8 +1,8 @@
-// components/ui/Header.tsx
 'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image' // Opcional: recomendado si usas Next.js Image
 import { useRouter } from 'next/navigation'
 import { logoutUsuarioAction } from '@/lib/actions/auth'
 import LoginForm from '@/components/forms/LoginForm'
@@ -32,9 +32,18 @@ export default function Header({ usuario = null }: HeaderProps) {
       <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="text-2xl font-bold text-primary-600 flex-shrink-0">
-              VentasYesStyle
+            
+            {/* Logo y Texto */}
+            <Link href="/" className="flex items-center space-x-2 flex-shrink-0 group">
+              {/* Opción 1: Usando el componente Image de Next.js (Recomendado) */}
+              <Image 
+                src="/logo.png" // Reemplaza con la ruta de tu logo en la carpeta public
+                alt="Alis Shop Logo" 
+                width={60} 
+                height={60} 
+                className="object-contain"
+              />
+              
             </Link>
 
             {/* ====== ACCIONES EN ESCRITORIO (visibles solo en desktop) ====== */}

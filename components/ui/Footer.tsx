@@ -10,10 +10,10 @@ export default function Footer() {
           {/* Logo y descripción */}
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-2xl font-bold text-primary-400 mb-4">
-              VentasYesStyle
+              Alis Shop
             </h3>
             <p className="text-gray-400 max-w-md">
-              Tu tienda online de productos de YesStyle.
+              Tu tienda online de productos YesStyle.
             </p>
           </div>
           
@@ -22,40 +22,19 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-4">Síguenos</h4>
             <div className="flex space-x-4">
               <a 
-                href="https://www.facebook.com/" 
+                href="#" 
                 className="text-gray-400 hover:text-white transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="w-6 h-6" />
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-6 h-6" />
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="w-6 h-6" />
-              </a>
-              <a 
-                href="#" 
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Youtube"
-              >
-                <Youtube className="w-6 h-6" />
-              </a>
+              </a>                            
             </div>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} VentasYesStyle. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} MiireTech. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>

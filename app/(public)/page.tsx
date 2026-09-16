@@ -1,6 +1,6 @@
-// app/(public)/page.tsx
 import { supabase } from '@/lib/supabaseClient'
 import ProductList from '@/components/ui/ProductList'
+import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,14 +41,28 @@ export default async function HomePage() {
 
   return (
     <div className="w-full">
-      {/* Hero / Banner */}
-      <section className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-16 rounded-xl mb-8">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            Bienvenido a VentasYesStyle
+      {/* Hero / Banner con Logo de Fondo */}
+      {/* 1. Añadimos 'relative' para que el logo posicionado absolutamente se contenga aquí */}
+      <section className="relative bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-24 rounded-2xl mb-8 overflow-hidden shadow-xl">
+        
+        {/* 2. Capa del Logo de Fondo (Marca de Agua) */}
+        <div className="absolute inset-0 z-0 opacity-100"> 
+          <Image 
+            src="/logo.png" // Asegúrate de tener tu logo en /public/logo.png
+            alt="Alis Shop Background Logo" 
+            fill
+            className="object-cover md:object-contain" // Cubre todo el fondo, manteniendo proporción en pantallas grandes
+            priority
+          />
+        </div>
+
+        {/* 3. Capa de Contenido (Texto) - 'relative z-10' asegura que esté por encima del logo */}
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">
+            Bienvenido a Alis Shop
           </h1>
-          <p className="text-lg md:text-2xl opacity-90">
-            Encuentra los mejores productos de moda y estilo
+          <p className="text-xl md:text-3xl font-light opacity-95 max-w-3xl mx-auto">
+            Encuentra productos originales de la pagina YesStyle
           </p>
         </div>
       </section>
